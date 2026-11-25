@@ -18,6 +18,18 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+const readjsonfile = async(filePath)=>{
+
+    try{
+        const raw = await fs.readFile(filePath, "utf8")
+        return JSON.parse(raw)
+    }
+    catch(error){
+        throw new Error("Olvasási hiba")
+    }
+
+}
+
 //!Endpoints:
 //?GET /api/test
 router.get('/test', (request, response) => {
@@ -25,6 +37,24 @@ router.get('/test', (request, response) => {
         message: 'Ez a végpont működik.'
     });
 });
+
+router.get('/kerdesek', async (request, response) => {
+    try {
+        const utvonal = path.join(__dirname, '../files/orszagok.json')
+        const content = await readjsonfile(utvonal)
+        const tomb = content.orszagok
+        response.status(200).json({
+            content : tomb
+        });
+    } catch (error) {
+        response.status(500).json({
+            message: 'Ez a végpont nem működik.'
+        });
+    }
+});
+
+
+
 
 //?GET /api/testsql
 router.get('/testsql', async (request, response) => {
